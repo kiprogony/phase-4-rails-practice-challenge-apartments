@@ -1,4 +1,6 @@
 class ApartmentsController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :render_record_not_found
+rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity
 
   def index
     render json: Apartment.all
@@ -39,5 +41,13 @@ class ApartmentsController < ApplicationController
 
   def render_unprocessable_entity(exception)
     render json: { errors: exception.record.errors.full_messages}, status: :unprocessable_entity 
+  end
+
+  def render_record_not_found
+    render json: { error: "Apartment not found" }, status: :not_found
+  end
+
+  def unpermitted_params
+    render json: {error: "unpermitted parameters"}
   end
 end
